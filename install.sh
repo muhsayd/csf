@@ -137,7 +137,7 @@ echo -ne "$RED
 
 install_csf() {
         echo -n "Downloading CSF: "
-        wget http://www.configserver.com/free/csf.tgz -O "$TEMPDIR/csf.tgz" &>/dev/null
+        wget https://download.configserver.com/csf.tgz -O "$TEMPDIR/csf.tgz" &>/dev/null
         echo "OK"
         tar -zxvf csf.tgz &>/dev/null
         cd ./csf
