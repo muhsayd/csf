@@ -35,19 +35,19 @@ uninstall() {
 	echo "WARNING :: THERE MIGHT BE NO FIREWALL ON THIS SERVER AFTER UNINSTALLATION. PLEASE INSTALL A NEW FIREWALL IF NEEDED!"
 
 	echo "STOPPING CSF"
-	/etc/init.d/csf stop
+	/etc/init.d/csf stop || systemctl stop csf
 	echo "STOPPING LFD"
-	/etc/init.d/lfd stop
+	/etc/init.d/lfd stop || systemctl stop lfd
 	echo "REMOVING CSF and LFD init SCRIPTS"
-	rm -fv /etc/init.d/csf
-	rm -fv /etc/init.d/lfd
+	rm -fv /etc/init.d/csf || rm -fv /usr/lib/systemd/system/csf.service
+	rm -fv /etc/init.d/lfd || rm -fv /usr/lib/systemd/system/lfd.service
 	echo "FLUSHING IPTABLES RULES"
 	/sbin/iptables --flush
 	/etc/init.d/iptables save
 	/etc/init.d/iptables restart
 	echo "REMOVING CSF AND LFD FROM CHKCONFIG"
-	chkconfig --del csf
-	chkconfig --del lfd
+	chkconfig --del csf || systemctl disable csf
+	chkconfig --del lfd || systemctl disable lfd
 	echo "REMOVING THE CSF AND LFD SYSLINKS"
 	rm -fv /usr/sbin/csf
 	rm -fv /usr/sbin/lfd
@@ -61,7 +61,7 @@ uninstall() {
 	echo "REMOVING LFD FROM CHKSERVD"
 	sed -ie 's/lfd:1//g' /etc/chkserv.d/chkservd.conf
 	echo "RESTARTING cPanel"
-	/etc/init.d/cpanel restart
+	/etc/init.d/cpanel restart || systemctl restart cpanel
 	echo " "
 	echo " "
 	echo "WARNING :: THERE MIGHT NOT BE A FIREWALL ON THIS SERVER. PLEASE INSTALL A NEW FIREWALL IF NEEDED!"
@@ -90,7 +90,7 @@ echo -ne "$RED
 		echo "Found (disabling)"
 		rm -f /var/cpanel/smtpgidonlytweak &>/dev/null
 		echo -n "Restarting cPanel: "
-		/etc/init.d/cpanel restart &>/dev/null
+		/etc/init.d/cpanel restart &>/dev/null || systemctl restart cpanel
 		echo "OK"
 	else
 		echo "OK (not found)"
@@ -137,7 +137,7 @@ echo -ne "$RED
 
 install_csf() {
         echo -n "Downloading CSF: "
-        wget http://www.configserver.com/free/csf.tgz -O "$TEMPDIR/csf.tgz" &>/dev/null
+        wget https://download.configserver.com/csf.tgz -O "$TEMPDIR/csf.tgz" &>/dev/null
         echo "OK"
         tar -zxvf csf.tgz &>/dev/null
         cd ./csf
@@ -335,7 +335,11 @@ configure_sshd_config(){
                 uncomment_tweak "MaxStartups " "MaxStartups 5" /etc/ssh/sshd_config
         fi
                 echo "Restarting: sshd"
-        if [ -e "/etc/init.d/sshd" ]; then /etc/init.d/sshd restart &>/dev/null ; fi
+        if [ -e "/etc/init.d/sshd" ]; then 
+		/etc/init.d/sshd restart &>/dev/null ; 
+	elif [ -e "/usr/lib/systemd/system/sshd.service" ]; then
+		systemctl restart sshd
+	fi
 }
 
 configure_csf_pignore(){
@@ -386,8 +390,8 @@ stop_services() {
 	for service in anacron avahi-daemon avahi-dnsconfd bluetooth canna cups gpm hidd iiim nfslock nifd pcscd \
 		rpcidmapd saslauthd sbadm webmin xfs ; do
 	  echo "- Stopping: $service"
-	  service $service stop &>/dev/null
-  	  chkconfig $service off &>/dev/null
+	  service $service stop &>/dev/null || systemctl stop $service &>/dev/null
+  	  chkconfig $service off &>/dev/null || systemctl disable $service &>/dev/null
 	done
 }
 
@@ -406,14 +410,14 @@ update_csf() {
 }
 
 restart_csf() {
-        if [ -e "/etc/rc.d/init.d/lfd" ]; then
+        if [ -e "/etc/rc.d/init.d/lfd" ] || [ -e "/usr/lib/systemd/system/lfd.service"]; then
                 echo -n "Restarting LFD: "
-                /etc/rc.d/init.d/lfd restart &>/dev/null
+                /etc/rc.d/init.d/lfd restart &>/dev/null || systemctl restart lfd &>/dev/null
                 echo "OK"
         fi
-        if [ -e "/etc/rc.d/init.d/csf" ]; then
+        if [ -e "/etc/rc.d/init.d/csf" ] || [ -e "/usr/lib/systemd/system/csf.service" ]; then
                 echo -n "Restarting CSF: "
-                /etc/rc.d/init.d/csf restart &>/dev/null
+                /etc/rc.d/init.d/csf restart &>/dev/null || systemctl restart csf &>/dev/null
                 echo "OK"
 
         fi
