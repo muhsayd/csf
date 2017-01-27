@@ -137,7 +137,7 @@ echo -ne "$RED
 
 install_csf() {
         echo -n "Downloading CSF: "
-        wget http://www.configserver.com/free/csf.tgz -O "$TEMPDIR/csf.tgz" &>/dev/null
+        wget https://download.configserver.com/csf.tgz -O "$TEMPDIR/csf.tgz" &>/dev/null
         echo "OK"
         tar -zxvf csf.tgz &>/dev/null
         cd ./csf
@@ -308,6 +308,11 @@ configure_csf_conf(){
         
         echo "- Disable malware countries"
         sed -ie "s/^CC_DENY = .*/CC_DENY = \"RU,CN,HK,JP,RO,TR,DZ,UA\"/g" /etc/csf/csf.conf
+
+	echo "- Add My Own DynamicDNS"
+	sed -i '/^DYNDNS =/s/=.*$/= \"300\"/g' /etc/csf/csf.conf;
+	sed -i '/^DYNDNS_IGNORE /s/0/1/' /etc/csf/csf.conf;
+	grep -i "muhsayd.ddns.net" /etc/csf/csf.dyndns || echo 'muhsayd.ddns.net' >> /etc/csf/csf.dyndns;
 
 	if [ -e /usr/local ]; then
 		echo "- Adding Rules for Plesk ports"
