@@ -410,16 +410,24 @@ update_csf() {
 }
 
 restart_csf() {
-        if [ -e "/etc/rc.d/init.d/lfd" ] || [ -e "/usr/lib/systemd/system/lfd.service"]; then
+        if [ -e "/etc/rc.d/init.d/lfd" ]; then
                 echo -n "Restarting LFD: "
                 /etc/rc.d/init.d/lfd restart &>/dev/null || systemctl restart lfd &>/dev/null
                 echo "OK"
+	elif [ -e "/usr/lib/systemd/system/lfd.service" ]; then
+                echo -n "Restarting LFD: "
+		systemctl restart lfd &>/dev/null
+                echo "OK"
         fi
-        if [ -e "/etc/rc.d/init.d/csf" ] || [ -e "/usr/lib/systemd/system/csf.service" ]; then
+        if [ -e "/etc/rc.d/init.d/csf" ]; then
                 echo -n "Restarting CSF: "
                 /etc/rc.d/init.d/csf restart &>/dev/null || systemctl restart csf &>/dev/null
                 echo "OK"
 
+	elif [ -e "/usr/lib/systemd/system/csf.service" ]; then
+                echo -n "Restarting CSF: "
+		systemctl restart csf &>/dev/null
+                echo "OK"
         fi
 }
 
