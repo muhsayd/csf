@@ -116,7 +116,7 @@ echo -ne "$RED
 	echo
 
 	#check for CentOS 6
-	release=$(cat /etc/redhat-release | awk '{print $3}' | cut -d . -f1);
+	release=$(cat /etc/redhat-release | sed -r 's/(.*)([0-9.]{3})(.*)/\2/' | cut -d . -f1);
 	if [ $release -ge 6  ]; then
 		releasev=$(cat /etc/redhat-release | awk '{print $3}')
 		echo "CentOS $releasev detected : Skipping klogd and syslog checks."
