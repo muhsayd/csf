@@ -7,7 +7,7 @@
 RED="\033[01;31m"
 GREEN="\033[01;32m"
 RESET="\033[0m"
-ver=v2.07;
+ver=v2.55;
 
 TEMPDIR="/root/tmp/csf"
 
@@ -357,24 +357,22 @@ configure_csf_pignore(){
 		echo "user:admin" >> /etc/csf/csf.pignore
 	fi
 
-          grep -i "/usr/local/cpanel/3rdparty/mailman/bin/qrunner" /etc/csf/csf.pignore &>/dev/null || \
-                echo "- Adding /usr/local/cpanel/3rdparty/mailman/bin/qrunner" && \
-                echo "exe:/usr/local/cpanel/3rdparty/mailman/bin/qrunner" >> /etc/csf/csf.pignore
+          ( grep -i "/usr/local/cpanel/3rdparty/mailman/bin/qrunner" /etc/csf/csf.pignore &>/dev/null || ( echo "- Adding /usr/local/cpanel/3rdparty/mailman/bin/qrunner" && echo "exe:/usr/local/cpanel/3rdparty/mailman/bin/qrunner" >> /etc/csf/csf.pignore ))
 
-          grep -i "/usr/sbin/mysqld" /etc/csf/csf.pignore &>/dev/null || \
-                echo "- Adding /usr/sbin/mysqld" && \
-                echo "exe:/usr/sbin/mysqld" /etc/csf/csf.pignore >> /etc/csf/csf.pignore
+          ( grep -i "/usr/sbin/mysqld" /etc/csf/csf.pignore &>/dev/null || ( echo "- Adding /usr/sbin/mysqld" && echo "exe:/usr/sbin/mysqld" /etc/csf/csf.pignore >> /etc/csf/csf.pignore ))
 
-          grep -i "/usr/local/cpanel/3rdparty/mailman/bin/mailmanctl" /etc/csf/csf.pignore &>/dev/null || \
-                echo "- Adding /usr/local/cpanel/3rdparty/mailman/bin/mailmanctl" && \
-                echo "exe:/usr/local/cpanel/3rdparty/mailman/bin/mailmanctl" >> /etc/csf/csf.pignore
+          ( grep -i "/usr/local/cpanel/3rdparty/mailman/bin/mailmanctl" /etc/csf/csf.pignore &>/dev/null || ( echo "- Adding /usr/local/cpanel/3rdparty/mailman/bin/mailmanctl" && echo "exe:/usr/local/cpanel/3rdparty/mailman/bin/mailmanctl" >> /etc/csf/csf.pignore))
+
+        if [ -e "`which nginx`" ]; then
+                NGINX=`which nginx`
+                ( grep -i "nginx" /etc/csf/csf.pignore &>/dev/null || ( echo "- Adding ${NGINX}" && echo "exe:${NGINX}" >> /etc/csf/csf.pignore ))
+        fi
 
         fi
 }
 
 configure_csf_dirwatch(){
-        grep "^/etc/ssh/sshd_config" /etc/csf/csf.dirwatch &>/dev/null || echo "/etc/ssh/sshd_config" >> /etc/csf/csf.dirwatch \
-                && echo "- Adding /etc/ssh/sshd_config file to watchlist"
+        ( grep "^/etc/ssh/sshd_config" /etc/csf/csf.dirwatch &>/dev/null || ( echo "/etc/ssh/sshd_config" >> /etc/csf/csf.dirwatch && echo "- Adding /etc/ssh/sshd_config file to watchlist" ))
 }
 
 configure_csf() {
