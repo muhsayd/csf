@@ -316,8 +316,8 @@ configure_csf_conf(){
 
 	echo "- Enable Global Allow List for All Murabba Networks"
 	sed -ie "s/^LF_GLOBAL = .*/LF_GLOBAL = \"86400\"/g" /etc/csf/csf.conf
-	sed -ie "s/^GLOBAL_ALLOW = .*/GLOBAL_ALLOW = \"http://git.murabba.com/nw/execlude.txt\"/g" /etc/csf/csf.conf
-	sed -ie "s/^GLOBAL_IGNORE = .*/GLOBAL_IGNORE = \"http://git.murabba.com/nw/execlude.txt\"/g" /etc/csf/csf.conf
+	sed -ie "s@^GLOBAL_ALLOW = .*@GLOBAL_ALLOW = \"http://git.murabba.com/nw/execlude.txt\"@g" /etc/csf/csf.conf
+	sed -ie "s@^GLOBAL_IGNORE = .*@GLOBAL_IGNORE = \"http://git.murabba.com/nw/execlude.txt\"@g" /etc/csf/csf.conf
 
         echo "- Increasing Number of Processes every user could run at once before sending email alert"
         sed -ie "s/^PT_USERPROC = .*/PT_USERPROC = \"25\"/g" /etc/csf/csf.conf
