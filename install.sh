@@ -307,12 +307,23 @@ configure_csf_conf(){
         sed -ie "s/^LT_POP3D = .*/LT_POP3D = \"120\"/g" /etc/csf/csf.conf
         
         echo "- Disable malware countries"
-        sed -ie "s/^CC_DENY = .*/CC_DENY = \"RU,CN,HK,JP,RO,TR,DZ,UA\"/g" /etc/csf/csf.conf
+        sed -ie "s/^CC_DENY = .*/CC_DENY = \"RU,CN,HK,JP,RO,UA\"/g" /etc/csf/csf.conf
 
 	echo "- Add My Own DynamicDNS"
 	sed -i '/^DYNDNS =/s/=.*$/= \"300\"/g' /etc/csf/csf.conf;
 	sed -i '/^DYNDNS_IGNORE /s/0/1/' /etc/csf/csf.conf;
 	grep -i "muhsayd.ddns.net" /etc/csf/csf.dyndns || echo 'muhsayd.ddns.net' >> /etc/csf/csf.dyndns;
+
+	echo "- Enable Global Allow List for All Murabba Networks"
+	sed -ie "s/^LF_GLOBAL = .*/LF_GLOBAL = \"86400\"/g" /etc/csf/csf.conf
+	sed -ie "s/^GLOBAL_ALLOW = .*/GLOBAL_ALLOW = \"http://git.murabba.com/nw/execlude.txt\"/g" /etc/csf/csf.conf
+	sed -ie "s/^GLOBAL_IGNORE = .*/GLOBAL_IGNORE = \"http://git.murabba.com/nw/execlude.txt\"/g" /etc/csf/csf.conf
+
+        echo "- Increasing Number of Processes every user could run at once before sending email alert"
+        sed -ie "s/^PT_USERPROC = .*/PT_USERPROC = \"25\"/g" /etc/csf/csf.conf
+
+        echo "- Increasing Amount of Memory User Can Consume before sending email alert"
+        sed -ie "s/^PT_USERMEM = .*/PT_USERMEM = \"800\"/g" /etc/csf/csf.conf
 
 	if [ -e /usr/local ]; then
 		echo "- Adding Rules for Plesk ports"
@@ -489,6 +500,21 @@ if [ "$(echo $1)" = "-i" ]
 		cleanup
 	}
 fi
+
+# Install if -c passed from command line
+if [ "$(echo $1)" = "-c" ]
+        then
+        {
+                plesk
+                prepare
+                configure_csf
+                stop_services
+                set_permissions
+                update_csf
+                restart_csf
+                cleanup
+        }
+fi
 # Print usage and exit.
 if [ "$(echo $1)" = "-v" ]
 	then
@@ -501,6 +527,7 @@ if [ -z "$(echo $1)" ]
 		echo " ";
 		echo "sh install.sh -i :: to install"
 		echo "sh install.sh -u :: to uninstall"
-		echo "sh install.sh -v :: to print the current version";
+		echo "sh install.sh -c :: Configure Current Installed CSF";
+                echo "sh install.sh -v :: to print the current version";
 	}
 fi
