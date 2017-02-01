@@ -284,10 +284,10 @@ configure_csf_conf(){
         echo "- Process Tracking Options"
 
         echo "  Setting Process Tracking Minimum Life to 180 seconds"
-        sed -ie "s/^PT_LIMIT = .*/PT_LIMIT = \"180\"/g" /etc/csf/csf.conf
+        sed -ie "s/^PT_LIMIT = .*/PT_LIMIT = \"300\"/g" /etc/csf/csf.conf
 
         echo "  Setting Process Tracking Check to 120 seconds"
-        sed -ie "s/^PT_INTERVAL = .*/PT_INTERVAL = \"120\"/g" /etc/csf/csf.conf
+        sed -ie "s/^PT_INTERVAL = .*/PT_INTERVAL = \"300\"/g" /etc/csf/csf.conf
 
         echo "  Verifying process killing is disabled"
         sed -ie "s/^PT_USERKILL = .*/PT_USERKILL = \"0\"/g" /etc/csf/csf.conf
@@ -358,6 +358,31 @@ configure_sshd_config(){
 	fi
 }
 
+configure_csf_pignore_template(){
+
+if [ "$#" -ne 2 ]; then
+	echo "Usage $0 type [Path|User]"
+	exit 10
+fi
+pignorefile='/etc/csf/csf.pignore'
+	if [ $1 = "exe" ]; then
+		type="exe"
+	elif [ $1 = "user" ]; then
+		type="user"
+        elif [ $1 = "cmd" ]; then
+                type="cmd"
+        elif [ $1 = "pexe" ]; then
+                type="pexe"
+        elif [ $1 = "puser" ]; then
+                type="puser"
+        elif [ $1 = "pcmd" ]; then
+                type="pcmd"
+	else
+		echo "Echo Unknown Type, use one the following: exe,user,cmd,pexe,puser or pcmd"
+	fi
+          ( grep -i "$2" $pignorefile &>/dev/null || ( echo "- Adding $2" && echo "$type:$2" >> ${pignorefile} ))
+
+}
 configure_csf_pignore(){
         if [ -f "/etc/csf/csf.pignore" ]; then
           echo "Editing: /etc/csf/csf.pignore"
@@ -372,16 +397,30 @@ configure_csf_pignore(){
 		echo "user:mysql" >> /etc/csf/csf.pignore
 		echo "user:admin" >> /etc/csf/csf.pignore
 	fi
+for exe in /usr/local/cpanel/3rdparty/mailman/bin/qrunner /usr/sbin/mysqld /usr/local/cpanel/3rdparty/mailman/bin/mailmanctl /usr/libexec/dovecot/imap /usr/local/cpanel/cpsrvd /usr/libexec/dovecot/pop3-login /usr/local/cpanel/3rdparty/bin/webalizer_lang/english /usr/bin/memcached /usr/sbin/mysqld /usr/libexec/dovecot/quota-status /usr/sbin/exim /usr/sbin/named 
+do
+	configure_csf_pignore_template exe ${exe}
+done
 
-          ( grep -i "/usr/local/cpanel/3rdparty/mailman/bin/qrunner" /etc/csf/csf.pignore &>/dev/null || ( echo "- Adding /usr/local/cpanel/3rdparty/mailman/bin/qrunner" && echo "exe:/usr/local/cpanel/3rdparty/mailman/bin/qrunner" >> /etc/csf/csf.pignore ))
-
-          ( grep -i "/usr/sbin/mysqld" /etc/csf/csf.pignore &>/dev/null || ( echo "- Adding /usr/sbin/mysqld" && echo "exe:/usr/sbin/mysqld" /etc/csf/csf.pignore >> /etc/csf/csf.pignore ))
-
-          ( grep -i "/usr/local/cpanel/3rdparty/mailman/bin/mailmanctl" /etc/csf/csf.pignore &>/dev/null || ( echo "- Adding /usr/local/cpanel/3rdparty/mailman/bin/mailmanctl" && echo "exe:/usr/local/cpanel/3rdparty/mailman/bin/mailmanctl" >> /etc/csf/csf.pignore))
+for exe in mailnull
+do
+        configure_csf_pignore_template user ${exe}
+done
+#          ( grep -i "/usr/local/cpanel/3rdparty/mailman/bin/qrunner" /etc/csf/csf.pignore &>/dev/null || ( echo "- Adding /usr/local/cpanel/3rdparty/mailman/bin/qrunner" && echo "exe:/usr/local/cpanel/3rdparty/mailman/bin/qrunner" >> /etc/csf/csf.pignore ))
+#          ( grep -i "/usr/sbin/mysqld" /etc/csf/csf.pignore &>/dev/null || ( echo "- Adding /usr/sbin/mysqld" && echo "exe:/usr/sbin/mysqld" /etc/csf/csf.pignore >> /etc/csf/csf.pignore ))
+#          ( grep -i "/usr/local/cpanel/3rdparty/mailman/bin/mailmanctl" /etc/csf/csf.pignore &>/dev/null || ( echo "- Adding /usr/local/cpanel/3rdparty/mailman/bin/mailmanctl" && echo "exe:/usr/local/cpanel/3rdparty/mailman/bin/mailmanctl" >> /etc/csf/csf.pignore))
+#          ( grep -i "/usr/libexec/dovecot/imap" /etc/csf/csf.pignore &>/dev/null || ( echo "- Adding /usr/libexec/dovecot/imap" && echo "exe:/usr/libexec/dovecot/imap" >> /etc/csf/csf.pignore))
+#          ( grep -i "/usr/local/cpanel/cpsrvd" /etc/csf/csf.pignore &>/dev/null || ( echo "- Adding /usr/local/cpanel/cpsrvd" && echo "exe:/usr/local/cpanel/cpsrvd" >> /etc/csf/csf.pignore))
+#          ( grep -i "/usr/libexec/dovecot/pop3-login" /etc/csf/csf.pignore &>/dev/null || ( echo "- Adding /usr/libexec/dovecot/pop3-login" && echo "exe:/usr/libexec/dovecot/pop3-login" >> /etc/csf/csf.pignore))
+#          ( grep -i "/usr/local/cpanel/3rdparty/bin/webalizer_lang/english" /etc/csf/csf.pignore &>/dev/null || ( echo "- Adding /usr/local/cpanel/3rdparty/bin/webalizer_lang/english" && echo "exe:/usr/local/cpanel/3rdparty/bin/webalizer_lang/english" >> /etc/csf/csf.pignore))
+#          ( grep -i "/usr/bin/memcached" /etc/csf/csf.pignore &>/dev/null || ( echo "- Adding /usr/bin/memcached" && echo "exe:/usr/bin/memcached" >> /etc/csf/csf.pignore))
+#          ( grep -i "/usr/sbin/mysqld" /etc/csf/csf.pignore &>/dev/null || ( echo "- Adding /usr/sbin/mysqld" && echo "exe:/usr/sbin/mysqld" >> /etc/csf/csf.pignore))
+#          ( grep -i "user:mailnull" /etc/csf/csf.pignore &>/dev/null || ( echo "- Adding user:mailnull" && echo "user:mailnull" >> /etc/csf/csf.pignore))
 
         if [ -e "`which nginx`" ]; then
                 NGINX=`which nginx`
-                ( grep -i "nginx" /etc/csf/csf.pignore &>/dev/null || ( echo "- Adding ${NGINX}" && echo "exe:${NGINX}" >> /etc/csf/csf.pignore ))
+		configure_csf_pignore_template exe ${NGINX}
+#                ( grep -i "nginx" /etc/csf/csf.pignore &>/dev/null || ( echo "- Adding ${NGINX}" && echo "exe:${NGINX}" >> /etc/csf/csf.pignore ))
         fi
 
         fi
