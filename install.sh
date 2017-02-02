@@ -381,7 +381,7 @@ pignorefile='/etc/csf/csf.pignore'
 		echo "Echo Unknown Type, use one the following: exe,user,cmd,pexe,puser or pcmd"
 	fi
 
-	( grep -i "$2" $pignorefile &>/dev/null || ( echo "- Adding $2" && echo "$type:$2" >> ${pignorefile} ))
+	( grep -i -E "^$1:$2$" $pignorefile &>/dev/null || ( echo "- Adding $2" && echo "$type:$2" >> ${pignorefile} ))
 
 }
 configure_csf_pignore(){
