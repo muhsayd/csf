@@ -359,9 +359,11 @@ configure_sshd_config(){
 }
 
 configure_csf_pignore_template(){
-
-if [ "$#" -ne 2 ]; then
-	echo "Usage $0 type [Path|User]"
+curifs=$IPF
+IFS='
+'
+if [ "$#" -lt 2 ]; then
+	echo "Usage configure_csf_pignore_template type [Path|User]"
 	exit 10
 fi
 pignorefile='/etc/csf/csf.pignore'
@@ -381,7 +383,10 @@ pignorefile='/etc/csf/csf.pignore'
 		echo "Echo Unknown Type, use one the following: exe,user,cmd,pexe,puser or pcmd"
 	fi
 
-	( grep -i -E "^$1:$2$" $pignorefile &>/dev/null || ( echo "- Adding $2" && echo "$type:$2" >> ${pignorefile} ))
+	shift;
+		
+	( grep -i -E "^${type}:$@$" $pignorefile &>/dev/null || ( echo "- Adding $@" && echo "$type:$@" >> ${pignorefile} ))
+IPF=$curifs
 
 }
 configure_csf_pignore(){
@@ -412,7 +417,7 @@ configure_csf_pignore(){
 
         for cmd in mailnull '/usr/sbin/httpd -k start'
         do
-                configure_csf_pignore_template user ${cmd}
+                configure_csf_pignore_template cmd ${cmd}
         done
 
         if [ -e "`which nginx`" ]; then
