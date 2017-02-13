@@ -404,7 +404,7 @@ configure_csf_pignore(){
 		echo "user:admin" >> /etc/csf/csf.pignore
 	fi
 
-	for exe in /usr/local/cpanel/3rdparty/mailman/bin/qrunner /usr/sbin/mysqld /usr/local/cpanel/3rdparty/mailman/bin/mailmanctl /usr/libexec/dovecot/imap /usr/local/cpanel/cpsrvd /usr/libexec/dovecot/pop3-login /usr/local/cpanel/3rdparty/bin/webalizer_lang/english /usr/bin/memcached /usr/sbin/mysqld /usr/libexec/dovecot/quota-status /usr/sbin/exim /usr/sbin/named /usr/libexec/dovecot/pop3
+	for exe in /usr/local/cpanel/3rdparty/mailman/bin/qrunner /usr/sbin/mysqld /usr/local/cpanel/3rdparty/mailman/bin/mailmanctl /usr/libexec/dovecot/imap /usr/local/cpanel/cpsrvd /usr/libexec/dovecot/pop3-login /usr/local/cpanel/3rdparty/bin/webalizer_lang/english /usr/bin/memcached /usr/sbin/mysqld /usr/libexec/dovecot/quota-status /usr/sbin/exim /usr/sbin/named /usr/libexec/dovecot/pop3 /usr/libexec/dovecot/imap-login
 
 	do
 		configure_csf_pignore_template exe ${exe}
@@ -418,6 +418,11 @@ configure_csf_pignore(){
         for cmd in mailnull '/usr/sbin/httpd -k start'
         do
                 configure_csf_pignore_template cmd ${cmd}
+        done
+
+	for pcmd in mailnull '/usr/bin/python /usr/local/cpanel/3rdparty/mailman/bin/qrunner.*'
+        do
+                configure_csf_pignore_template pcmd ${cmd}
         done
 
         if [ -e "`which nginx`" ]; then
