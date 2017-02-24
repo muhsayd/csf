@@ -404,23 +404,23 @@ configure_csf_pignore(){
 		echo "user:admin" >> /etc/csf/csf.pignore
 	fi
 
-	for exe in /usr/local/cpanel/3rdparty/mailman/bin/qrunner /usr/sbin/mysqld /usr/local/cpanel/3rdparty/mailman/bin/mailmanctl /usr/libexec/dovecot/imap /usr/local/cpanel/cpsrvd /usr/libexec/dovecot/pop3-login /usr/local/cpanel/3rdparty/bin/webalizer_lang/english /usr/bin/memcached /usr/sbin/mysqld /usr/libexec/dovecot/quota-status /usr/sbin/exim /usr/sbin/named /usr/libexec/dovecot/pop3 /usr/libexec/dovecot/imap-login
+	for exe in /usr/local/cpanel/3rdparty/mailman/bin/qrunner /usr/sbin/mysqld /usr/local/cpanel/3rdparty/mailman/bin/mailmanctl /usr/libexec/dovecot/imap /usr/local/cpanel/cpsrvd /usr/libexec/dovecot/pop3-login /usr/local/cpanel/3rdparty/bin/webalizer_lang/english /usr/bin/memcached /usr/sbin/mysqld /usr/libexec/dovecot/quota-status /usr/sbin/exim /usr/sbin/named /usr/libexec/dovecot/pop3 /usr/libexec/dovecot/imap-login /usr/local/cpanel/base/show_template.stor /usr/sbin/pdns_server /usr/local/cpanel/3rdparty/sbin/p0f /usr/libexec/hald-addon-acpi
 
 	do
 		configure_csf_pignore_template exe ${exe}
 	done
 
-	for user in mailnull dovecot
+	for user in mailnull dovecot cpanellogin named cpanelconnecttrack haldaemon mysql
 	do
         	configure_csf_pignore_template user ${user}
 	done
 
-        for cmd in mailnull '/usr/sbin/httpd -k start'
+        for cmd in mailnull '/usr/sbin/httpd -k start' '/bin/sh /usr/bin/mysqld_safe'
         do
                 configure_csf_pignore_template cmd ${cmd}
         done
 
-	for pcmd in mailnull '/usr/bin/python /usr/local/cpanel/3rdparty/mailman/bin/qrunner.*'
+	for pcmd in '/usr/bin/python /usr/local/cpanel/3rdparty/mailman/bin/qrunner.*'
         do
                 configure_csf_pignore_template pcmd ${cmd}
         done
