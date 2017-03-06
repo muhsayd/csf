@@ -410,7 +410,7 @@ configure_csf_pignore(){
 		configure_csf_pignore_template exe ${exe}
 	done
 
-	for user in mailnull dovecot cpanellogin named cpanelconnecttrack haldaemon mysql clamav zabbix cpanelroundcube mailman
+	for user in mailnull dovecot cpanellogin named cpanelconnecttrack haldaemon mysql clamav zabbix cpanelroundcube mailman nscd
 	do
         	configure_csf_pignore_template user ${user}
 	done
