@@ -307,7 +307,8 @@ configure_csf_conf(){
         sed -ie "s/^LT_POP3D = .*/LT_POP3D = \"120\"/g" /etc/csf/csf.conf
         
         echo "- Disable malware countries"
-        sed -ie "s/^CC_DENY = .*/CC_DENY = \"RU,CN,HK,JP,RO,UA\"/g" /etc/csf/csf.conf
+#        sed -ie "s/^CC_DENY = .*/CC_DENY = \"RU,CN,HK,JP,RO,UA\"/g" /etc/csf/csf.conf
+        sed -ie "s/^CC_DENY = .*/CC_DENY = \"\"/g" /etc/csf/csf.conf
 
 	echo "- Add My Own DynamicDNS"
 	sed -i '/^DYNDNS =/s/=.*$/= \"300\"/g' /etc/csf/csf.conf;
