@@ -333,7 +333,7 @@ configure_csf_conf(){
         sed -ie "s/^PT_USERPROC = .*/PT_USERPROC = \"25\"/g" /etc/csf/csf.conf
 
         echo "- Increasing Amount of Memory User Can Consume before sending email alert"
-        sed -ie "s/^PT_USERMEM = .*/PT_USERMEM = \"800\"/g" /etc/csf/csf.conf
+        sed -ie "s/^PT_USERMEM = .*/PT_USERMEM = \"1024\"/g" /etc/csf/csf.conf
 
 	if [ -e /usr/local ]; then
 		echo "- Adding Rules for Plesk ports"
