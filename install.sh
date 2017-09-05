@@ -322,7 +322,7 @@ configure_csf_conf(){
 	echo "- Add My Own DynamicDNS"
 	sed -i '/^DYNDNS =/s/=.*$/= \"300\"/g' /etc/csf/csf.conf;
 	sed -i '/^DYNDNS_IGNORE /s/0/1/' /etc/csf/csf.conf;
-	grep -i "muhsayd.ddns.net" /etc/csf/csf.dyndns || echo 'muhsayd.ddns.net' >> /etc/csf/csf.dyndns;
+	grep -i "murabba.ddns.net" /etc/csf/csf.dyndns || echo 'murabba.ddns.net' >> /etc/csf/csf.dyndns;
 
 	echo "- Enable Global Allow List for All Murabba Networks"
 	sed -ie "s/^LF_GLOBAL = .*/LF_GLOBAL = \"86400\"/g" /etc/csf/csf.conf
