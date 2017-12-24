@@ -232,20 +232,34 @@ configure_csf_conf(){
         sed -ie "s/^LF_SSHD_PERM = .*/LF_SSHD_PERM = \"3600\"/g" /etc/csf/csf.conf
 
         echo "- Setting SMTP failure rate to 20 / 5 min ban"
-
         sed -ie "s/^LF_SMTPAUTH = .*/LF_SMTPAUTH = \"20\"/g" /etc/csf/csf.conf
-        sed -ie "s/^LF_SMTPAUTH = .*/LF_SMTPAUTH = \"300\"/g" /etc/csf/csf.conf
+	sed -ie "s/^LF_SMTPAUTH_PERM[ \t]=.*$/LF_SMTPAUTH_PERM = \"1\"/" /etc/csf/csf.conf
+#        sed -ie "s/^LF_SMTPAUTH = .*/LF_SMTPAUTH = \"300\"/g" /etc/csf/csf.conf
+
+        echo "- Changeing SMTP_BLOCK from 0 to 1 (Enabled), to block SMTP authentication Failure exceeds the limits"
+        sed -ie "s/^SMTP_BLOCK = .*/SMTP_BLOCK = \"1\"/g" /etc/csf/csf.conf
+
+        echo "- Changeing RESTRICT_SYSLOG from 0 to 3 (Enabled), Due to issues with syslog/rsyslog"
+        sed -ie "s/^RESTRICT_SYSLOG = .*/RESTRICT_SYSLOG = \"3\"/g" /etc/csf/csf.conf
 
         echo "- Setting POP3 failure rate to 20 / 5min ban"
         sed -ie "s/^LF_POP3D = .*/LF_POP3D = \"20\"/g" /etc/csf/csf.conf
         sed -ie "s/^LF_POP3D_PERM = .*/LF_POP3D_PERM = \"300\"/g" /etc/csf/csf.conf
 
-        echo "- Setting HTTP auth failure detection to 0 (disabled)"
-        sed -ie "s/^LF_HTACCESS = .*/LF_HTACCESS = \"0\"/g" /etc/csf/csf.conf
+#        echo "- Setting HTTP auth failure detection to 0 (disabled)"
+#        sed -ie "s/^LF_HTACCESS = .*/LF_HTACCESS = \"0\"/g" /etc/csf/csf.conf
+#        sed -ie "s/^LF_HTACCESS_PERM = .*/LF_HTACCESS_PERM = \"300\"/g" /etc/csf/csf.conf
+
+	echo "- Setting HTTP auth failure detection to 1 (enabled)"
+        sed -ie "s/^LF_HTACCESS = .*/LF_HTACCESS = \"1\"/g" /etc/csf/csf.conf
         sed -ie "s/^LF_HTACCESS_PERM = .*/LF_HTACCESS_PERM = \"300\"/g" /etc/csf/csf.conf
 
-        echo "- Setting MODSEC failure detection to 0 (disabled)"
-        sed -ie "s/^LF_MODSEC = .*/LF_MODSEC = \"0\"/g" /etc/csf/csf.conf
+#        echo "- Setting MODSEC failure detection to 0 (disabled)"
+#        sed -ie "s/^LF_MODSEC = .*/LF_MODSEC = \"0\"/g" /etc/csf/csf.conf
+#        sed -ie "s/^LF_MODSEC_PERM = .*/LF_MODSEC_PERM = \"300\"/g" /etc/csf/csf.conf
+
+        echo "- Setting MODSEC failure detection to 1 (enabled)"
+        sed -ie "s/^LF_MODSEC = .*/LF_MODSEC = \"1\"/g" /etc/csf/csf.conf
         sed -ie "s/^LF_MODSEC_PERM = .*/LF_MODSEC_PERM = \"300\"/g" /etc/csf/csf.conf
 
         echo "- Setting cPanel login failures to 15 / 15min ban"
@@ -323,6 +337,7 @@ configure_csf_conf(){
 	sed -i '/^DYNDNS =/s/=.*$/= \"300\"/g' /etc/csf/csf.conf;
 	sed -i '/^DYNDNS_IGNORE /s/0/1/' /etc/csf/csf.conf;
 	grep -i "murabba.ddns.net" /etc/csf/csf.dyndns || echo 'murabba.ddns.net' >> /etc/csf/csf.dyndns;
+        grep -i "muhsayd.ddns.net" /etc/csf/csf.dyndns || echo 'muhsayd.ddns.net' >> /etc/csf/csf.dyndns;
 
 	echo "- Enable Global Allow List for All Murabba Networks"
 	sed -ie "s/^LF_GLOBAL = .*/LF_GLOBAL = \"86400\"/g" /etc/csf/csf.conf
@@ -330,10 +345,16 @@ configure_csf_conf(){
 	sed -ie "s@^GLOBAL_IGNORE = .*@GLOBAL_IGNORE = \"http://git.murabba.com/nw/execlude.txt\"@g" /etc/csf/csf.conf
 
         echo "- Increasing Number of Processes every user could run at once before sending email alert"
-        sed -ie "s/^PT_USERPROC = .*/PT_USERPROC = \"25\"/g" /etc/csf/csf.conf
+        sed -ie "s/^PT_USERPROC = .*/PT_USERPROC = \"50\"/g" /etc/csf/csf.conf
 
         echo "- Increasing Amount of Memory User Can Consume before sending email alert"
         sed -ie "s/^PT_USERMEM = .*/PT_USERMEM = \"1024\"/g" /etc/csf/csf.conf
+
+        echo "- Change SYSLOG_CHECK from 0 to 3600 (enabled), This option helps prevent brute force attacks on your server services"
+        sed -ie "s/^SYSLOG_CHECK = .*/SYSLOG_CHECK = \"3600\"/g" /etc/csf/csf.conf
+
+        echo "- Change PT_ALL_USERS from 0 to 1 (enabled), To track All Users Processes"
+        sed -ie "s/^PT_ALL_USERS = .*/PT_ALL_USERS = \"1\"/g" /etc/csf/csf.conf
 
 	if [ -e /usr/local ]; then
 		echo "- Adding Rules for Plesk ports"
