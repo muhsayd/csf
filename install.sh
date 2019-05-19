@@ -117,7 +117,7 @@ echo -ne "$RED
 
 	#check for CentOS 6
 	if [ -f "/etc/redhat-release" ]; then
-		release=$(cat /etc/redhat-release | sed -r 's/.*([0-9.]{4}).*/\1/' | cut -d . -f1);
+		release=$(cat /etc/redhat-release | sed -r 's/[a-zA-Z ]+([0-9.]+).*/\1/' | cut -d. -f1);
 	elif [ -f "/etc/system-release" ]; then
 		if $(grep -iq "amazon" /etc/system-release 2>/dev/unll); then
 			if $(grep -iq "2017" /etc/system-release 2>/dev/unll); then
