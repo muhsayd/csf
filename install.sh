@@ -473,12 +473,30 @@ configure_csf_dirwatch(){
         ( grep "^/etc/ssh/sshd_config" /etc/csf/csf.dirwatch &>/dev/null || ( echo "/etc/ssh/sshd_config" >> /etc/csf/csf.dirwatch && echo "- Adding /etc/ssh/sshd_config file to watchlist" ))
 }
 
+enableAndConfigureMESSENGER(){
+        egrep -q '^MESSENGER = "1"' /etc/csf/csf.conf || sed -i '/^MESSENGER[\t ]=/s/0/1/' /etc/csf/csf.conf
+        egrep -q '^MESSENGERV2 = "1"' /etc/csf/csf.conf || sed -i '/^MESSENGERV2[\t ]/s/0/1/' /etc/csf/csf.conf
+        egrep -q '^MESSENGER_HTTPS = "8887"' /etc/csf/csf.conf || sed -i '/^MESSENGER_HTTPS[\t ]=[\t ]/s/=.*$/= "8887"/' /etc/csf/csf.conf
+        egrep -q '^MESSENGER_HTTPS_IN = "443,4430,2083,2096"' /etc/csf/csf.conf || sed -i '/^MESSENGER_HTTPS_IN[\t ]=[\t ]/s/=.*$/= "443,4430,2083,2096"/' /etc/csf/csf.conf
+        egrep -q '^MESSENGER_HTML = "8888"' /etc/csf/csf.conf || sed -i '/^MESSENGER_HTML[\t ]=[\t ]/s/=.*$/= "8888"/' /etc/csf/csf.conf
+        egrep -q '^MESSENGER_HTTPS_IN = "443,4430,2083,2096"' /etc/csf/csf.conf || sed -i '/^MESSENGER_HTTPS_IN[\t ]=[\t ]/s/=.*$/= "443,4430,2083,2096"/' /etc/csf/csf.conf
+        egrep -q '^RECAPTCHA_SITEKEY = "6Lc0ZbsUAAAAADilLM8eVqvkSASg3KeVJxfYR4Wg"' /etc/csf/csf.conf || sed -i '/^RECAPTCHA_SITEKEY[\t ]=[\t ]/s/=.*$/= "6Lc0ZbsUAAAAADilLM8eVqvkSASg3KeVJxfYR4Wg"/' /etc/csf/csf.conf
+        egrep -q '^RECAPTCHA_SECRET = "6Lc0ZbsUAAAAAPVQ5VZtiQJL2p8MVmrQkKg0AJNu"' /etc/csf/csf.conf || sed -i '/^RECAPTCHA_SECRET[\t ]=[\t ]/s/=.*$/= "6Lc0ZbsUAAAAAPVQ5VZtiQJL2p8MVmrQkKg0AJNu"/' /etc/csf/csf.conf
+        chmod 755 -R /etc/csf/messenger/
+        chown csf:csf -R /etc/csf/messenger/
+        egrep -q csf /etc/passwd || /useradd csf -s /bin/false
+        systemctl restart lfd >/dev/null 2>&1 || /etc/init.d/lfd restart >/dev/null
+        systemctl restart csf >/dev/null 2>&1 || /etc/init.d/csf restart >/dev/null
+        csf -r > /dev/null
+}
+
 configure_csf() {
 	configure_csf_allow
 	configure_csf_conf
 	configure_sshd_config
 	configure_csf_pignore
 	configure_csf_dirwatch
+	enableAndConfigureMESSENGER
 }
 
 stop_services() {
@@ -602,6 +620,12 @@ if [ "$(echo $1)" = "-v" ]
 	then
 		echo "install-csf $ver";
 fi
+
+if [ "$(echo $1)" = "-m" ]
+        then
+                enableAndConfigureMESSENGER
+fi
+
 if [ -z "$(echo $1)" ]
 	then
 	{
