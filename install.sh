@@ -474,6 +474,7 @@ configure_csf_dirwatch(){
 }
 
 enableAndConfigureMESSENGER(){
+	echo -n "Enabling and Configuring CSF Messenger Service"
         egrep -q '^MESSENGER = "1"' /etc/csf/csf.conf || sed -i '/^MESSENGER[\t ]=/s/0/1/' /etc/csf/csf.conf
         egrep -q '^MESSENGERV2 = "1"' /etc/csf/csf.conf || sed -i '/^MESSENGERV2[\t ]/s/0/1/' /etc/csf/csf.conf
         egrep -q '^MESSENGER_HTTPS = "8887"' /etc/csf/csf.conf || sed -i '/^MESSENGER_HTTPS[\t ]=[\t ]/s/=.*$/= "8887"/' /etc/csf/csf.conf
@@ -488,6 +489,7 @@ enableAndConfigureMESSENGER(){
         systemctl restart lfd >/dev/null 2>&1 || /etc/init.d/lfd restart >/dev/null
         systemctl restart csf >/dev/null 2>&1 || /etc/init.d/csf restart >/dev/null
         csf -r > /dev/null
+	echo " ... Done"
 }
 
 configure_csf() {
