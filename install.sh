@@ -485,8 +485,8 @@ enableAndConfigureMESSENGER(){
         egrep -q '^RECAPTCHA_SITEKEY = "6Lc0ZbsUAAAAADilLM8eVqvkSASg3KeVJxfYR4Wg"' /etc/csf/csf.conf || sed -i '/^RECAPTCHA_SITEKEY[\t ]=[\t ]/s/=.*$/= "6Lc0ZbsUAAAAADilLM8eVqvkSASg3KeVJxfYR4Wg"/' /etc/csf/csf.conf
         egrep -q '^RECAPTCHA_SECRET = "6Lc0ZbsUAAAAAPVQ5VZtiQJL2p8MVmrQkKg0AJNu"' /etc/csf/csf.conf || sed -i '/^RECAPTCHA_SECRET[\t ]=[\t ]/s/=.*$/= "6Lc0ZbsUAAAAAPVQ5VZtiQJL2p8MVmrQkKg0AJNu"/' /etc/csf/csf.conf
         chmod 755 -R /etc/csf/messenger/
-        chown csf:csf -R /etc/csf/messenger/
         egrep -q csf /etc/passwd || /useradd csf -s /bin/false
+        chown csf:csf -R /etc/csf/messenger/
         systemctl restart lfd >/dev/null 2>&1 || /etc/init.d/lfd restart >/dev/null
         systemctl restart csf >/dev/null 2>&1 || /etc/init.d/csf restart >/dev/null
         csf -r > /dev/null
